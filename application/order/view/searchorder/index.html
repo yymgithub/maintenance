@@ -1,0 +1,376 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>北大软微后勤维修管理平台</title>
+    <meta name="description" content="北大软微后勤维修管理平台">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/assets/css/normalize.css">
+    <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="/static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="/static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="/static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="/static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/style.css">
+    <style>
+        .card-body--{
+            margin-top: -40px;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Left Panel -->
+<aside id="left-panel" class="left-panel">
+    <nav class="navbar navbar-expand-sm navbar-default">
+        <div id="main-menu" class="main-menu collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+
+                <li class="menu-title">工单</li><!-- /.menu-title -->
+                <li class="active menu-item-has-children">
+                    <a href="{:url('order/searchorder/index')}"> <i class="menu-icon fa fa-eye"></i>工单查询 </a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('order/sendorder/index')}"> <i class="menu-icon fa fa-pencil"></i>派单</a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('order/modifyorder/index')}"> <i class="menu-icon fa fa-eraser"></i>改单</a>
+                </li>
+
+                <li class="menu-title">统计</li><!-- /.menu-title -->
+                <li class="menu-item-has-children">
+                    <a href="{:url('statistics/statistics/index')}"> <i class="menu-icon fa fa-bar-chart-o"></i>统计数据查询</a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('statistics/type/index')}"> <i class="menu-icon fa fa-wrench"></i>维修类别管理 </a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('statistics/area/index')}"> <i class="menu-icon fa ti-location-pin"></i>维修区域管理</a>
+                </li>
+
+                <li class="menu-title">个人信息</li><!-- /.menu-title -->
+                <li class="menu-item-has-children">
+                    <a href="{:url('personal/personal/index')}"> <i class="menu-icon fa fa-edit"></i>编辑个人信息</a>
+                </li>
+
+                <li class="menu-title">人员管理</li><!-- /.menu-title -->
+                {if condition="$Think.session.user['admin_level'] == 1"}
+                <li class="menu-item-has-children">
+                    <a href="{:url('admin/admin/index')}"> <i class="menu-icon fa fa-user"></i>管理员管理</a>
+                </li>
+                {/if}
+                <li class="menu-item-has-children">
+                    <a href="{:url('admin/maintainer/index')}"> <i class="menu-icon fa fa-male"></i>维修工管理</a>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+</aside>
+<!-- /#left-panel -->
+<!-- Right Panel -->
+<div id="right-panel" class="right-panel">
+    <!-- Header-->
+    <header id="header" class="header">
+        <div class="top-left">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{:url('order/searchorder/index')}"><img src="/static/images/logo.png" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="{:url('order/searchorder/index')}"><img src="/static/images/logo2.png" alt="Logo"></a>
+                <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+        <div class="top-right">
+            <div class="header-menu">
+                <div class="header-left">
+                    <a href="{:url('login/login/loginout')}">
+                        {$Think.session.user['username']}[退出]
+                    </a>
+                    <div class="dropdown for-notification">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="notification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-bell"></i>
+                            <span class="count bg-danger">{$count}</span>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="message">
+                            <p class="red">有{$count}个工单待派单</p>
+                            {volist name='info' id='list'}
+                            <a class="dropdown-item media" href="{:url('order/orderinformation/index',['id' => $list['work_order_id']])}">
+                                <span class="photo media-left"><i class="menu-icon fa  fa-user"></i></span>
+                                <div class="message media-body">
+                                    <span class="name float-left">{$list.customer_name}</span>
+                                    <span class="time float-right" id="time">{$list.create_time}</span>
+                                    <p>{$list.description}</p>
+                                </div>
+                            </a>
+                            {/volist}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="user-area dropdown float-right">
+                    <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img class="user-avatar rounded-circle" src="/static/images/admin.jpg" alt="User Avatar">
+                    </a>
+
+                    <div class="user-menu dropdown-menu">
+                        <a class="nav-link" href="{:url('personal/personal/index')}"><i class="fa fa-user"></i>我的资料</a>
+                        <a class="nav-link" href="{:url('login/login/loginout')}"><i class="fa fa-power-off"></i>退出</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+    <!-- /#header -->
+    <!-- Content -->
+    <div class="content">
+        <div class="animated fadeIn">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="box-title">工单信息</h4>
+                            <br/>
+                            <form action="{:url('order/searchorder/search')}" method="post" class="inline-block">
+                                <div class="form-group">
+                                    <div class="input-group" >
+                                        <input type="text" name="keyword" placeholder="关键字" class="form-control">
+                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <select name="status" id="status">
+                                            <option value="0">全部状态</option>
+                                            <option value="1">待处理</option>
+                                            <option value="2">维修中</option>
+                                            <option value="3">待评价</option>
+                                            <option value="4">异常</option>
+                                            <option value="5">已结单</option>
+                                        </select>
+                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <button type="submit" class="btn btn-success btn-sm">查询</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-body--">
+                            <div class="table-stats">
+                                <table id="bootstrap-data-table" class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="serial">序号</th>
+                                        <th>工单编号</th>
+                                        <th>报修人</th>
+                                        <th>身份</th>
+                                        <th>报修时间</th>
+                                        <th>报修内容</th>
+                                        <th>报修区域</th>
+                                        <th>报修地址</th>
+                                        <th>联系电话</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {foreach name="orders" item="order"}
+                                    <tr>
+                                        <td class="serial">{$key+1}</td>
+                                        <td>{$order['work_order_id']}</td>
+                                        <td><span class="name">{$order['customer_name']}</span> </td>
+                                        <td>
+                                            <span class="product">
+                                                {if condition="$order['identity'] neq '1'"}学生
+                                                {else /} 老师
+                                                {/if}
+                                            </span>
+                                        </td>
+                                        <td><span class="product">{$order['create_time']}</span> </td>
+                                        <td><span class="product">{$order['description']}</span> </td>
+                                        <td><span class="product">{$order['area_description']}</span> </td>
+                                        <td><span class="product">{$order['address']}</span> </td>
+                                        <td><span class="product">{$order['phone']}</span> </td>
+                                        <td>
+                                            {switch name="$order.work_order_status"}
+                                            {case value="3"}<span class="badge badge-dark" >异常</span>{/case}
+                                            {case value="4"}<span class="badge badge-info">已结单</span>{/case}
+                                            {case value="2"}<span class="badge btn-secondary">待评价</span>{/case}
+                                            {case value="1"}<span class="badge badge-primary">维修中</span>{/case}
+                                            {default /}<span class="badge badge-danger">待处理</span>
+                                            {/switch}
+                                        </td>
+                                        <td>
+                                            {switch name="$order.work_order_status"}
+                                            {case value="3"}
+                                            <button type="button" class="btn btn-primary btn-sm mb-1" data-workorderid="{$order.work_order_id}" data-orderstatus="{$order.work_order_status}" data-infostatus="1" data-toggle="modal" data-target="#scrollmodal">
+                                                <i class="fa fa-star"></i>&nbsp;派单
+                                            </button>
+                                            {/case}
+                                            {case value="4"}{/case}
+                                            {case value="2"}{/case}
+                                            {case value="1"}
+                                            <button type="button" class="btn btn-warning btn-sm mb-1" data-workorderid="{$order.work_order_id}" data-orderstatus="{$order.work_order_status}" data-infostatus="2" data-toggle="modal" data-target="#scrollmodal">
+                                                <i class="fa fa-star"></i>&nbsp;改单
+                                            </button>
+                                            {/case}
+                                            {default /}
+                                            <button type="button" class="btn btn-primary btn-sm mb-1" data-workorderid="{$order.work_order_id}" data-orderstatus="{$order.work_order_status}" data-infostatus="1" data-toggle="modal" data-target="#scrollmodal">
+                                                <i class="fa fa-star"></i>&nbsp;派单
+                                            </button>
+                                            {/switch}
+                                            <a href="{:url('order/orderinformation/index',['id' => $order['work_order_id']])}">
+                                                <button type="button" class="btn btn-success btn-sm mb-1">
+                                                    <i class="fa fa-magic"></i>&nbsp;详情
+                                                </button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="scrollmodal" tabindex="-1" role="dialog" aria-labelledby="scrollmodalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="scrollmodalLabel">请选择工人</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div >
+                                <input id="order_id"  type="hidden">
+                                <input id="order_status" type="hidden">
+                                <input id="info_status" type="hidden">
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-check-inline form-check">
+                                    {foreach name="Think.session.workers" item="worker"}
+                                    <label for="{$key}" class="form-check-label ">
+                                        <input type="checkbox" id="{$key}" name="sendWorkers" value="{$worker.worker_id}" class="form-check-input">
+                                        {$worker.worker_name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </label>
+                                    {/foreach}
+                                </div>
+                                <div class="form-group">
+                                    <div id="msg1"></div>
+                                </div>
+                            </div>
+                            <div id="msg"></div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-success" id="send_success">确认</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- .animated -->
+    </div>
+    <!-- /.content -->
+
+    <div class="clearfix"></div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner bg-white">
+            <div class="row">
+                <div class="col-sm-6">
+                    Copyright &copy; 2019 SSPKU Admin. 友情链接 <a href="http://www.ss.pku.edu.cn/" target="_blank" title="北京大学软件与微电子学院">北京大学软件与微电子学院</a>
+                </div>
+                <div class="col-sm-6 text-right"> Designed by SunJiajing
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- /.site-footer -->
+</div>
+<!-- /#right-panel -->
+
+<!-- Scripts -->
+<script src="/static/assets/js/vendor/jquery-2.1.4.min.js"></script>
+<script src="/static/assets/js/popper.min.js"></script>
+<script src="/static/assets/js/bootstrap.min.js"></script>
+<script src="/static/assets/js/jquery.matchHeight.min.js"></script>
+<script src="/static/assets/js/main.js"></script>
+<script src="/static/assets/js/lib/data-table/datatables.min.js"></script>
+<script src="/static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+<script src="/static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
+<script src="/static/assets/js/lib/data-table/jszip.min.js"></script>
+<script src="/static/assets/js/lib/data-table/vfs_fonts.js"></script>
+<script src="/static/assets/js/lib/data-table/buttons.html5.min.js"></script>
+<script src="/static/assets/js/lib/data-table/buttons.print.min.js"></script>
+<script src="/static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
+<script src="/static/assets/js/init/datatables-init.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#bootstrap-data-table-export').DataTable();
+    } );
+    //派单弹框
+    $('#scrollmodal').on('show.bs.modal', function (e) {
+        var orderId = $(e.relatedTarget).data("workorderid");
+        var orderStatus = $(e.relatedTarget).data("orderstatus");
+        var infoStatus = $(e.relatedTarget).data("infostatus");
+        $("#order_id").val(orderId);
+        $("#order_status").val(orderStatus);
+        $("#info_status").val(infoStatus);
+        $("#msg1").html("");
+    });
+
+    $("#send_success").on("click", function(){
+        obj = document.getElementsByName("sendWorkers");
+        check_val = new Array();
+        for(k in obj){
+            if(obj[k].checked)
+                check_val.push(obj[k].value);
+        }
+        var orderId = $("#order_id").val();
+        var orderStatus = $("#order_status").val();
+        var infoStatus = $("#info_status").val();
+        var worderIds = check_val;
+        var status = 3;
+        if(infoStatus ==1){
+            $.ajax({
+                url:"{:url('order/sendorder/send')}",
+                type:"POST",
+                data:{"orderid":orderId,"orderstatus":orderStatus,"worderids":worderIds,"status":status},
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    if(data.code == 1){
+                        $("#msg").html("<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + data.msg + "</p>");
+                        setTimeout("location.href='"+data.url+"'",1000);
+                    }else{
+                        $("#msg").html("<p class='color-red'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + data.msg + "</p>");
+                    }
+                }
+            })
+        }
+        else{
+            $.ajax({
+                url:"{:url('order/modifyorder/updateorder')}",
+                type:"POST",
+                data:{"orderid":orderId,"orderstatus":orderStatus,"worderids":worderIds,"status":status},
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    if(data.code == 1){
+                        $("#msg1").html("<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + data.msg + "</p>");
+                        setTimeout("location.href='"+data.url+"'",1000);
+                    }else{
+                        $("#msg1").html("<p class='color-red'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + data.msg + "</p>");
+                    }
+                }
+            })
+        }
+    });
+</script>
+</body>
+</html>

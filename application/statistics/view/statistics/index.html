@@ -1,0 +1,652 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>北大软微后勤维修管理平台</title>
+    <meta name="description" content="北大软微后勤维修管理平台">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/assets/css/normalize.css">
+    <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="/static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="/static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="/static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="/static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/style.css">
+</head>
+
+<body>
+<!-- Left Panel -->
+<aside id="left-panel" class="left-panel">
+    <nav class="navbar navbar-expand-sm navbar-default">
+        <div id="main-menu" class="main-menu collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+
+                <li class="menu-title">工单</li><!-- /.menu-title -->
+                <li class="menu-item-has-children">
+                    <a href="{:url('order/searchorder/index')}"> <i class="menu-icon fa fa-eye"></i>工单查询 </a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('order/sendorder/index')}"> <i class="menu-icon fa fa-pencil"></i>派单</a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('order/modifyorder/index')}"> <i class="menu-icon fa fa-eraser"></i>改单</a>
+                </li>
+
+                <li class="menu-title">统计</li><!-- /.menu-title -->
+                <li class="active menu-item-has-children">
+                    <a href="{:url('statistics/statistics/index')}"> <i class="menu-icon fa fa-bar-chart-o"></i>统计数据查询</a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('statistics/type/index')}"> <i class="menu-icon fa fa-wrench"></i>维修类别管理 </a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="{:url('statistics/area/index')}"> <i class="menu-icon fa ti-location-pin"></i>维修区域管理</a>
+                </li>
+
+                <li class="menu-title">个人信息</li><!-- /.menu-title -->
+                <li class="menu-item-has-children">
+                    <a href="{:url('personal/personal/index')}"> <i class="menu-icon fa fa-edit"></i>编辑个人信息</a>
+                </li>
+
+                <li class="menu-title">人员管理</li><!-- /.menu-title -->
+                {if condition="$Think.session.user['admin_level'] == 1"}
+                <li class="menu-item-has-children">
+                    <a href="{:url('admin/admin/index')}"> <i class="menu-icon fa fa-user"></i>管理员管理</a>
+                </li>
+                {/if}
+                <li class="menu-item-has-children">
+                    <a href="{:url('admin/maintainer/index')}"> <i class="menu-icon fa fa-male"></i>维修工管理</a>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+</aside>
+<!-- /#left-panel -->
+
+<!-- Right Panel -->
+<div id="right-panel" class="right-panel">
+
+    <!-- Header-->
+    <header id="header" class="header">
+        <div class="top-left">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{:url('order/searchorder/index')}"><img src="/static/images/logo.png" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="{:url('order/searchorder/index')}"><img src="/static/images/logo2.png" alt="Logo"></a>
+                <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+        <div class="top-right">
+            <div class="header-menu">
+                <div class="header-left">
+                    <a href="{:url('login/login/loginout')}">
+                        {$Think.session.user['username']}[退出]
+                    </a>
+
+                    <div class="dropdown for-notification">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="notification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-bell"></i>
+                            <span class="count bg-danger">{$count}</span>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="message">
+                            <p class="red">有{$count}个工单待派单</p>
+                            {volist name='info' id='list'}
+                            <a class="dropdown-item media" href="{:url('order/orderinformation/index',['id' => $list['work_order_id']])}">
+                                <span class="photo media-left"><i class="menu-icon fa  fa-user"></i></span>
+                                <div class="message media-body">
+                                    <span class="name float-left">{$list.customer_name}</span>
+                                    <span class="time float-right" id="time">{$list.create_time}</span>
+                                    <p>{$list.description}</p>
+                                </div>
+                            </a>
+                            {/volist}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="user-area dropdown float-right">
+                    <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img class="user-avatar rounded-circle" src="/static/images/admin.jpg" alt="User Avatar">
+                    </a>
+
+                    <div class="user-menu dropdown-menu">
+                        <a class="nav-link" href="{:url('personal/personal/index')}"><i class="fa fa-user"></i>我的资料</a>
+                        <a class="nav-link" href="{:url('login/login/loginout')}"><i class="fa fa-power-off"></i>退出</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+    <!-- /#header -->
+
+    <!-- Content -->
+    <div class="content">
+        <div class="animated fadeIn">
+            <!--查询按钮-->
+            <div >
+                <!--按年度查询-->
+                <div class="type-form">
+                    <button type="button" class="btn btn-success btn-sm" id="1" onclick="getDatachart1(this.id);getDatachart2(this.id);getDatachart3(this.id);getDatachart4(this.id)">
+                        &nbsp;本&nbsp;月
+                    </button>
+                </div>
+                <div class="type-form">
+                    <button type="button" class="btn btn-success btn-sm" id="2" onclick="getDatachart1(this.id);getDatachart2(this.id);getDatachart3(this.id);getDatachart4(this.id)">
+                        &nbsp;上&nbsp;月
+                    </button>
+                </div>
+                <div class="type-form">
+                    <button type="button" class="btn btn-success btn-sm" id="3" onclick="getDatachart1(this.id);getDatachart2(this.id);getDatachart3(this.id);getDatachart4(this.id)">
+                        &nbsp;本&nbsp;年
+                    </button>
+                </div>
+                <div class="type-form">
+                    <button type="button" class="btn btn-success btn-sm"  id="4" onclick="getDatachart1(this.id);getDatachart2(this.id);getDatachart3(this.id);getDatachart4(this.id)">
+                        &nbsp;上&nbsp;年
+                    </button>
+                </div>
+            </div>
+
+            <div class="clear"></div>
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="chart1" style="width: 100%;height: 350px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="chart2" style="width: 100%;height: 350px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="chart3" style="width: 100%;height: 350px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="chart4" style="width: 100%;height: 350px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+        </div><!-- .animated -->
+    </div>
+    <!-- /.content -->
+
+    <div class="clearfix"></div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner bg-white">
+            <div class="row">
+                <div class="col-sm-6">
+                    Copyright &copy; 2019 SSPKU Admin. 友情链接 <a href="http://www.ss.pku.edu.cn/" target="_blank" title="北京大学软件与微电子学院">北京大学软件与微电子学院</a>
+                </div>
+                <div class="col-sm-6 text-right"> Designed by SunJiajing
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- /.site-footer -->
+</div>
+<!-- /#right-panel -->
+
+<!--echarts相关js-->
+<script src="/static/assets/js/echarts.js"></script>
+<script src="/static/assets/js/jquery.min.js"></script>
+<script src="/static/assets/js/theme/macarons.js"></script>
+<script src="/static/assets/js/theme/shine.js"></script>
+<script src="/static/assets/js/theme/roma.js"></script>
+<script src="/static/assets/js/theme/dark.js"></script>
+<script src="/static/assets/js/theme/infographic.js"></script>
+
+<!--chart1柱状图从后台取数据ajax的js-->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('chart1'));
+    // 显示标题，图例和空的坐标轴
+    myChart.setOption({
+        title: {
+            text: '个人工作量'
+        },
+        tooltip: {},
+        legend: {
+            data:['工单数'],
+            top:0,
+            right:10
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            name: '工单数',
+            type: 'bar',
+            data: []
+        }],
+        grid:{
+            left:25,
+            right:20,
+            top:40,
+            bottom:20
+        }
+    });
+
+    // 异步加载数据
+    $.ajax({
+        url:"getData",
+        data:{},
+        type: "POST",
+        dataType:"JSON",
+        success: function (data) {
+
+            myChart.setOption({
+                xAxis:{
+                    data:data.categories,
+                    axisLabel:{
+                        interval:0
+                    }
+                },
+                series:[{
+                    name:'工单量',
+                    data:data.data
+                }]
+            });
+        }
+    });
+</script>
+<!--chart2圆饼图动态js-->
+<script type="text/javascript">
+    var Piechart = echarts.init(document.getElementById('chart2'),'shine');
+    var option = {
+        title: {
+            text: '个人工作量统计',
+            top:0,
+            left: 'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            // orient: 'vertical',
+            // top: 'middle',
+            bottom: 10,
+            left: 'center',
+            data: []
+        },
+        series : [
+            {
+                type: 'pie',
+                radius : '65%',
+                center: ['50%', '50%'],
+                selectedMode: 'single',
+                data:[],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ],
+        grid:{
+            left:0,
+            right:0,
+            top:-30,
+            bottom:0
+        }
+    };
+    $.ajax({
+        url:"getData1",
+        data:{},
+        type: "POST",
+        dataType:"JSON",
+        success: function (data) {
+
+            Piechart.setOption({
+                legend:{
+                    data:data.categories
+                },
+                series:[{
+                    data:(function () {
+                        var rs = [];
+                        for(var res in data.categories){
+                            rs.push({
+                                name :data.categories[res],
+                                value:data.data[res]
+                            });
+                        }
+                        return rs;
+                    })(),
+                    name:'工作量（单）',
+                }]
+            });
+            Piechart.hideLoading();
+        }
+    })
+    Piechart.setOption(option);
+</script>
+<!--chart3圆饼图动态js-->
+<script type="text/javascript">
+    var chart3 = echarts.init(document.getElementById('chart3'),'macarons');
+    var option = {
+        title: {
+            text: '按类别统计',
+            top:0,
+            left: 'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            top: 'middle',
+            right:-5,
+            bottom: 10,
+            data: []
+        },
+        series : [
+            {
+                type: 'pie',
+                radius : '65%',
+                center: ['40%', '50%'],
+                selectedMode: 'single',
+                data:[],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ],
+        grid:{
+            left:0,
+            right:0,
+            top:-30,
+            bottom:0
+        }
+    };
+    $.ajax({
+        url:"getData2",
+        data:{},
+        type: "POST",
+        dataType:"JSON",
+        success: function (data) {
+
+            chart3.setOption({
+                legend:{
+                    data:data.categories
+                },
+                series:[{
+                    data:(function () {
+                        var rs = [];
+                        for(var res in data.categories){
+                            rs.push({
+                                name :data.categories[res],
+                                value:data.data[res]
+                            });
+                        }
+                        return rs;
+                    })(),
+                    name:'工单数量',
+                }]
+            });
+            chart3.hideLoading();
+        }
+    })
+    chart3.setOption(option);
+</script>
+<!--chart4圆饼图动态js-->
+<script type="text/javascript">
+    var chart4 = echarts.init(document.getElementById('chart4'),'roma');
+    var option = {
+        title: {
+            text: '按维修区域统计',
+            top:0,
+            left: 'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            // orient: 'vertical',
+            // top: 'middle',
+            bottom: -5,
+            left: 'center',
+            data: []
+        },
+        series : [
+            {
+                type: 'pie',
+                radius : '65%',
+                center: ['50%', '50%'],
+                selectedMode: 'single',
+                data:[],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ],
+        grid:{
+            left:0,
+            right:0,
+            top:-30,
+            bottom:0
+        }
+    };
+    $.ajax({
+        url:"getData3",
+        data:{},
+        type: "POST",
+        dataType:"JSON",
+        success: function (data) {
+
+            chart4.setOption({
+                legend:{
+                    data:data.categories
+                },
+                series:[{
+                    data:(function () {
+                        var rs = [];
+                        for(var res in data.categories){
+                            rs.push({
+                                name :data.categories[res],
+                                value:data.data[res]
+                            });
+                        }
+                        return rs;
+                    })(),
+                    name:'工单量',
+                }]
+            });
+            chart4.hideLoading();
+        }
+    })
+    chart4.setOption(option);
+</script>
+<!--chart点击事件-->
+<script type="text/javascript">
+    function getDatachart1(id) {
+        $.ajax({
+            url:"getDatachart1",
+            type:"post",
+            data:{id:id},
+            dataType:"json",
+            success:function(data){
+                console.log(data.data);
+                myChart.setOption({
+                    xAxis:{
+                        data:data.categories
+                    },
+                    series:[{
+                        name:'销量',
+                        data:data.data
+                    }]
+                });
+            },
+        });
+    };
+    function getDatachart2(id) {
+        $.ajax({
+            url:"getDatachart2",
+            type:"post",
+            data:{id:id},
+            dataType:"json",
+            success:function(data){
+                console.log(data.data);
+                Piechart.setOption({
+                    legend:{
+                        data:data.categories
+                    },
+                    series:[{
+                        data:(function () {
+                            var rs = [];
+                            for(var res in data.categories){
+                                rs.push({
+                                    name :data.categories[res],
+                                    value:data.data[res]
+                                });
+                            }
+                            return rs;
+                        })(),
+                        name:'工作量（单）',
+                    }]
+                });
+            },
+        });
+    }
+    function getDatachart3(id) {
+        $.ajax({
+            url:"getDatachart3",
+            type:"post",
+            data:{id:id},
+            dataType:"json",
+            success:function(data){
+                console.log(data.data);
+                chart3.setOption({
+                    legend:{
+                        data:data.categories
+                    },
+                    series:[{
+                        data:(function () {
+                            var rs = [];
+                            for(var res in data.categories){
+                                rs.push({
+                                    name :data.categories[res],
+                                    value:data.data[res]
+                                });
+                            }
+                            return rs;
+                        })(),
+                        name:'工作量（单）',
+                    }]
+                });
+            },
+        });
+    }
+    function getDatachart4(id) {
+        $.ajax({
+            url:"getDatachart4",
+            type:"post",
+            data:{id:id},
+            dataType:"json",
+            success:function(data){
+                console.log(data.data);
+                chart4.setOption({
+                    legend:{
+                        data:data.categories
+                    },
+                    series:[{
+                        data:(function () {
+                            var rs = [];
+                            for(var res in data.categories){
+                                rs.push({
+                                    name :data.categories[res],
+                                    value:data.data[res]
+                                });
+                            }
+                            return rs;
+                        })(),
+                        name:'工单量',
+                    }]
+                });
+            },
+        });
+    }
+</script>
+
+
+
+<!-- Scripts -->
+<script src="/static/assets/js/vendor/jquery-2.1.4.min.js"></script>
+<script src="/static/assets/js/popper.min.js"></script>
+<script src="/static/assets/js/bootstrap.min.js"></script>
+<script src="/static/assets/js/jquery.matchHeight.min.js"></script>
+<script src="/static/assets/js/main.js"></script>
+<script src="/static/assets/js/lib/data-table/datatables.min.js"></script>
+<script src="/static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+<script src="/static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
+<script src="/static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
+<script src="/static/assets/js/lib/data-table/jszip.min.js"></script>
+<script src="/static/assets/js/lib/data-table/vfs_fonts.js"></script>
+<script src="/static/assets/js/lib/data-table/buttons.html5.min.js"></script>
+<script src="/static/assets/js/lib/data-table/buttons.print.min.js"></script>
+<script src="/static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
+<script src="/static/assets/js/init/datatables-init.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flot-charts@0.8.3/excanvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flot-charts@0.8.3/jquery.flot.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.pie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.time.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.stack.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.resize.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.crosshair.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flot.curvedlines@1.1.1/curvedLines.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.flot.tooltip@0.9.0/js/jquery.flot.tooltip.min.js"></script>
+<script src="/static/assets/js/init/flot-chart-init.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#bootstrap-data-table-export').DataTable();
+    } );
+</script>
+</body>
+</html>
